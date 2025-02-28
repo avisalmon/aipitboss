@@ -1,0 +1,7 @@
+{
+  "openai": "your-openai-api-key-here",
+  "anthropic": "your-anthropic-api-key-here",
+  "huggingface": "your-huggingface-api-key-here",
+  
+  "comment": "Rename this file to .keys.json and replace the placeholder values with your actual API keys for use with AIPitBoss."
+} 
