@@ -20,6 +20,7 @@ class AnthropicService:
     
     def __init__(
         self,
+        service_name: Optional[str] = None,
         api_key: Optional[str] = None,
         timeout: int = 60,
         max_retries: int = 3,
@@ -30,15 +31,21 @@ class AnthropicService:
         Initialize an Anthropic service.
         
         Args:
+            service_name: Optional service name (e.g., "anthropic") for KeyManager lookup
             api_key: Anthropic API key (optional if using keys file or env vars)
             timeout: Request timeout in seconds
             max_retries: Maximum number of retries for failed requests
             keys_file: Optional path to a JSON file containing API keys
             use_env: Whether to check environment variables for API keys
         """
+        # Support simple initialization with just service name
+        service = "anthropic"
+        if service_name is not None:
+            service = service_name
+        
         # Get the API key using the KeyManager
         api_key = KeyManager.get_api_key(
-            service="anthropic",
+            service=service,
             api_key=api_key,
             keys_file=keys_file,
             use_env=use_env,

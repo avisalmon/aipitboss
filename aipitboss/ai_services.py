@@ -8,6 +8,8 @@ popular AI service APIs like OpenAI, Hugging Face, etc.
 from typing import Dict, Any, Optional, List, Union
 from .api_connect import APIConnect
 from .key_manager import KeyManager
+import json
+from pathlib import Path
 
 
 class OpenAIService:
@@ -21,6 +23,7 @@ class OpenAIService:
     
     def __init__(
         self,
+        service_name: Optional[str] = None,
         api_key: Optional[str] = None,
         organization_id: Optional[str] = None,
         timeout: int = 60,
@@ -32,6 +35,7 @@ class OpenAIService:
         Initialize an OpenAI service.
         
         Args:
+            service_name: Optional service name (e.g., "openai") for KeyManager lookup
             api_key: OpenAI API key (optional if using keys file or env vars)
             organization_id: Optional OpenAI organization ID
             timeout: Request timeout in seconds
@@ -39,26 +43,119 @@ class OpenAIService:
             keys_file: Optional path to a JSON file containing API keys
             use_env: Whether to check environment variables for API keys
         """
-        # Get the API key using the KeyManager
-        api_key = KeyManager.get_api_key(
-            service="openai",
-            api_key=api_key,
-            keys_file=keys_file,
-            use_env=use_env,
-        )
+        # Support simple initialization with just service name
+        self.service_name = "openai"
+        if service_name is not None:
+            self.service_name = service_name
         
-        headers = {}
-        if organization_id:
-            headers["OpenAI-Organization"] = organization_id
-            
-        self.api = APIConnect(
-            api_key=api_key,
-            base_url="https://api.openai.com/v1",
-            headers=headers,
-            timeout=timeout
-        )
+        self.organization_id = organization_id
+        self.timeout = timeout
         self.max_retries = max_retries
+        self.keys_file = keys_file
+        self.use_env = use_env
+        
+        # Try to find keys file in current directory or parent directory
+        if self.keys_file is None:
+            from pathlib import Path
+            current_dir_keys = ".keys.json"
+            parent_dir_keys = "../.keys.json"
+            
+            if Path(current_dir_keys).exists():
+                self.keys_file = current_dir_keys
+            elif Path(parent_dir_keys).exists():
+                self.keys_file = parent_dir_keys
+        
+        # Get the API key using the KeyManager
+        try:
+            api_key = KeyManager.get_api_key(
+                service=self.service_name,
+                api_key=api_key,
+                keys_file=self.keys_file,
+                use_env=self.use_env,
+            )
+            
+            headers = {}
+            if self.organization_id:
+                headers["OpenAI-Organization"] = self.organization_id
+                
+            self.api = APIConnect(
+                api_key=api_key,
+                base_url="https://api.openai.com/v1",
+                headers=headers,
+                timeout=self.timeout
+            )
+        except ValueError as e:
+            print(f"Error initializing OpenAIService: {e}")
+            self.api = None
     
+    def get_services(self) -> List[str]:
+        """
+        Get a list of available service names from the keys file.
+        
+        Returns:
+            List of service names with API keys in the keys file
+        """
+        services = []
+        
+        # Check if keys file exists
+        if self.keys_file and Path(self.keys_file).exists():
+            try:
+                with open(self.keys_file, 'r') as f:
+                    keys = json.load(f)
+                services = list(keys.keys())
+            except (json.JSONDecodeError, FileNotFoundError):
+                pass
+        
+        return services
+    
+    def set_service(self, service: str) -> bool:
+        """
+        Change the service provider.
+        
+        Args:
+            service: Name of the service to use (must be in keys file)
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.keys_file or not Path(self.keys_file).exists():
+            print(f"No keys file found.")
+            return False
+            
+        try:
+            # Check if the service exists in the keys file
+            services = self.get_services()
+            if service not in services:
+                print(f"Service '{service}' not found in keys file.")
+                return False
+                
+            # Update the service name
+            self.service_name = service
+            
+            # Get the new API key
+            api_key = KeyManager.get_api_key(
+                service=service,
+                keys_file=self.keys_file,
+                use_env=self.use_env,
+            )
+            
+            # Update the API connection
+            headers = {}
+            if self.organization_id:
+                headers["OpenAI-Organization"] = self.organization_id
+                
+            self.api = APIConnect(
+                api_key=api_key,
+                base_url="https://api.openai.com/v1",
+                headers=headers,
+                timeout=self.timeout
+            )
+            
+            return True
+        except ValueError as e:
+            print(f"Error setting service: {e}")
+            return False
+            
     def chat_completion(
         self,
         messages: List[Dict[str, str]],

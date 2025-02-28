@@ -54,132 +54,22 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "from aipitboss import OpenAIService, Chat\n",
-    "\n",
-    "# Initialize OpenAI service with just the service name (it will find the key from the .keys.json)\n",
-    "openai = OpenAIService(\"openai\")\n",
-    "\n",
-    "# Check if the service is properly initialized\n",
-    "if hasattr(openai, 'api') and hasattr(openai.api, 'api_key') and openai.api.api_key:\n",
-    "    # Get first few characters of the API key for confirmation\n",
-    "    api_key_preview = openai.api.api_key[:8] + \"...\"\n",
-    "    print(f\"✓ Successfully initialized OpenAI service with API key\")\n",
-    "    print(f\"  API key starts with: {api_key_preview}\")\n",
-    "else:\n",
-    "    print(\"✗ Failed to initialize OpenAI service with API key\")\n"
+    "### Method 1: Direct API Key (For Testing Only)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
-   "metadata": {},
-   "outputs": [
-    {
-     "ename": "ModuleNotFoundError",
-     "evalue": "No module named 'Chat'",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[31m------------------------------------------------------------------------\u001b[39m",
-      "\u001b[31mModuleNotFoundError\u001b[39m                    Traceback (most recent call last)",
-      "\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[9]\u001b[39m\u001b[32m, line 2\u001b[39m\n\u001b[32m      1\u001b[39m \u001b[38;5;66;03m# Create a Chat instance with our OpenAI service\u001b[39;00m\n\u001b[32m----> \u001b[39m\u001b[32m2\u001b[39m \u001b[38;5;28;01mimport\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34;01mChat\u001b[39;00m\n\u001b[32m      3\u001b[39m chat = Chat(openai)\n\u001b[32m      5\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mask_question\u001b[39m(question, model=\u001b[33m\"\u001b[39m\u001b[33mgpt-3.5-turbo\u001b[39m\u001b[33m\"\u001b[39m):\n",
-      "\u001b[31mModuleNotFoundError\u001b[39m: No module named 'Chat'"
-     ]
-    }
-   ],
-   "source": [
-    "# Create a Chat instance with our OpenAI service\n",
-    "\n",
-    "chat = Chat(openai)\n",
-    "\n",
-    "def ask_question(question, model=\"gpt-3.5-turbo\"):\n",
-    "    \"\"\"Ask a question to OpenAI and get the response.\"\"\"\n",
-    "    # Use the Chat class to ask a question\n",
-    "    return chat.ask_question(\n",
-    "        question=question,\n",
-    "        model=model,\n",
-    "        temperature=0.7,\n",
-    "        max_tokens=150\n",
-    "    )\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
-    "from aipitboss import OpenAIService, Chat"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 9,
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Hello! How can I assist you today?\n"
-     ]
-    },
-    {
-     "data": {
-      "text/plain": [
-       "['__class__',\n",
-       " '__delattr__',\n",
-       " '__dict__',\n",
-       " '__dir__',\n",
-       " '__doc__',\n",
-       " '__eq__',\n",
-       " '__firstlineno__',\n",
-       " '__format__',\n",
-       " '__ge__',\n",
-       " '__getattribute__',\n",
-       " '__getstate__',\n",
-       " '__gt__',\n",
-       " '__hash__',\n",
-       " '__init__',\n",
-       " '__init_subclass__',\n",
-       " '__le__',\n",
-       " '__lt__',\n",
-       " '__module__',\n",
-       " '__ne__',\n",
-       " '__new__',\n",
-       " '__reduce__',\n",
-       " '__reduce_ex__',\n",
-       " '__repr__',\n",
-       " '__setattr__',\n",
-       " '__sizeof__',\n",
-       " '__static_attributes__',\n",
-       " '__str__',\n",
-       " '__subclasshook__',\n",
-       " '__weakref__',\n",
-       " '_ask_anthropic',\n",
-       " '_ask_openai',\n",
-       " '_stream_openai',\n",
-       " 'ask',\n",
-       " 'ask_question',\n",
-       " 'clear_history',\n",
-       " 'conversation_history',\n",
-       " 'get_history',\n",
-       " 'service',\n",
-       " 'setService',\n",
-       " 'stream_question',\n",
-       " 'system_message']"
-      ]
-     },
-     "execution_count": 9,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
-   "source": [
-    "openai = OpenAIService('openai')\n",
-    "chat = Chat(openai)\n",
-    "answer = chat.ask('hi')\n",
-    "print(answer)\n",
-    "dir(chat)"
+    "# Import AIPitBoss\n",
+    "from aipitboss import OpenAIService\n",
+    "\n",
+    "# Initialize with direct API key (not recommended for shared or production code)\n",
+    "# openai = OpenAIService(api_key='your-api-key-here')\n",
+    "\n",
+    "# Note: We're not executing this code as it's not the recommended approach"
    ]
   },
   {
@@ -220,18 +110,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Keys file exists in parent directory at C:\\projects\\aihub\\examples\\..\\.keys.json\n",
-      "Available keys for services: ['openai']\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "import json\n",
     "import os\n",
@@ -277,79 +158,36 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "âœ“ Successfully initialized OpenAI service with API key\n",
-      "  API key starts with: sk-proj-...\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "from aipitboss import OpenAIService\n",
-    "import os\n",
-    "from pathlib import Path\n",
     "\n",
-    "# Get the absolute path to the keys file in the parent directory\n",
-    "parent_keys_file = str(Path(\"../.keys.json\").resolve())\n",
+    "# Initialize OpenAI service (will check multiple locations)\n",
+    "# This will automatically check .keys.json, ../.keys.json, and environment variables\n",
+    "openai = OpenAIService()\n",
     "\n",
-    "# Initialize OpenAI service with explicit path to keys file\n",
-    "openai = OpenAIService(keys_file=parent_keys_file)\n",
-    "\n",
-    "# Check if the service is properly initialized\n",
-    "# Instead of directly accessing api_key, we'll check if the api attribute exists and has an api_key\n",
-    "if hasattr(openai, 'api') and hasattr(openai.api, 'api_key') and openai.api.api_key:\n",
-    "    # Get first few characters of the API key for confirmation\n",
-    "    api_key_preview = openai.api.api_key[:8] + \"...\"\n",
-    "    print(f\"âœ“ Successfully initialized OpenAI service with API key\")\n",
-    "    print(f\"  API key starts with: {api_key_preview}\")\n",
+    "# Print confirmation (without revealing the actual key)\n",
+    "if openai.api_key:\n",
+    "    print(\"✓ Successfully initialized OpenAI service with API key\")\n",
+    "    print(f\"  API key starts with: {openai.api_key[:8]}...\")\n",
     "else:\n",
-    "    print(\"âœ— Failed to initialize OpenAI service with API key\")\n"
+    "    print(\"✗ Failed to initialize OpenAI service with API key\")"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "import requests\n",
-    "from aipitboss.streaming import StreamProcessor\n",
+    "### Creating a Simple Question-Answering Application\n",
     "\n",
-    "def stream_question(question, model=\"gpt-3.5-turbo\"):\n",
-    "    \"\"\"Stream a question to OpenAI and get the response character by character.\"\"\"\n",
-    "    # Prepare the request data\n",
-    "    url = \"https://api.openai.com/v1/chat/completions\"\n",
-    "    headers = {\n",
-    "        \"Authorization\": f\"Bearer {openai.api.api_key}\",\n",
-    "        \"Content-Type\": \"application/json\"\n",
-    "    }\n",
-    "    data = {\n",
-    "        \"model\": model,\n",
-    "        \"messages\": [\n",
-    "            {\"role\": \"system\", \"content\": \"You are a helpful, concise assistant.\"},\n",
-    "            {\"role\": \"user\", \"content\": question}\n",
-    "        ],\n",
-    "        \"temperature\": 0.7,\n",
-    "        \"stream\": True  # Enable streaming\n",
-    "    }\n",
-    "    \n",
-    "    # Make the streaming request\n",
-    "    response = requests.post(url, json=data, headers=headers, stream=True)\n",
-    "    response.raise_for_status()\n",
-    "    \n",
-    "    # Process the stream and return the full content\n",
-    "    return StreamProcessor.process_openai_stream(\n",
-    "        response.iter_lines(),\n",
-    "        chunk_handler=StreamProcessor.print_stream\n",
-    "    )\n"
+    "Let's create a simple function to ask questions to OpenAI's models using our AIPitBoss integration:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": null,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -383,20 +221,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Question: What is artificial intelligence in simple terms?\n",
-      "\n",
-      "Answer:\n",
-      "Artificial intelligence (AI) is a field of computer science that focuses on creating technology that can perform tasks that typically require human intelligence, such as visual perception, speech recognition, decision-making, and language translation. AI systems use algorithms and data to learn from experience, make predictions, and adapt to new information.\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "# Ask a question\n",
     "question = \"What is artificial intelligence in simple terms?\"\n",
@@ -408,20 +235,9 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": null,
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Question: What are the three main types of machine learning?\n",
-      "\n",
-      "Answer:\n",
-      "The three main types of machine learning are supervised learning, unsupervised learning, and reinforcement learning.\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "# Ask another question\n",
     "question = \"What are the three main types of machine learning?\"\n",
@@ -575,7 +391,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "Python 3 (ipykernel)",
+   "display_name": "Python 3",
    "language": "python",
    "name": "python3"
   },
@@ -589,9 +405,9 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.13.2"
+   "version": "3.8.8"
   }
  },
  "nbformat": 4,
  "nbformat_minor": 4
-}
+} 

@@ -33,3 +33,16 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/ 
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Development and temporary scripts
+*fix*.py
+*update*.py
+*temp*.py
+*script*.py
+
+# Logs and temporary files
+*.log
+*.tmp 
