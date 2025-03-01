@@ -1,0 +1,7 @@
+[33me5baa34[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Update README with hooks setup instructions
+[33me120885[m Add Git hooks setup script for Windows
+[33m0d1cf07[m Test commit with pre-commit hook disabled
+[33m2db4d63[m stable version Sat 1-3
+[33m23c8c09[m Clean up development files and improve API
+[33m22ae9eb[m Add Jupyter notebook example for OpenAI API integration
+[33m49755e0[m Initial commit of AIPitBoss package

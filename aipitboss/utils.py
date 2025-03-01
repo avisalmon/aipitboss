@@ -3,7 +3,8 @@
 """
 Utility module for AIPitBoss package.
 
-This module provides common utility functions for working with AI APIs.
+This module provides common utility functions for working with AI APIs,
+including retry logic, prompt formatting, and response parsing.
 """
 
 import json

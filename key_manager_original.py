@@ -167,11 +167,8 @@ class KeyManager:
                             # OpenAI models data structure
                             info["models"] = [model["id"] for model in data["data"]]
                         elif service == "anthropic" and "models" in data:
-                            # Anthropic models data structure - direct array of models
+                            # Anthropic models data structure
                             info["models"] = data["models"]
-                        elif service == "anthropic" and "data" in data:
-                            # Alternative Anthropic data structure
-                            info["models"] = [model["id"] for model in data["data"]]
                     except Exception:
                         # If we can't parse models, that's okay
                         pass
@@ -327,6 +324,19 @@ class KeyManager:
             # Check if request was successful
             if response.status_code == 200:
                 info["valid"] = True
+                
+                # Extract available models if possible
+                try:
+                    data = response.json()
+                    if service == "openai" and "data" in data:
+                        # OpenAI models data structure
+                        info["models"] = [model["id"] for model in data["data"]]
+                    elif service == "anthropic" and "models" in data:
+                        # Anthropic models data structure
+                        info["models"] = data["models"]
+                except Exception:
+                    # If we can't parse models, that's okay
+                    pass
             else:
                 info["valid"] = False
         except Exception:
