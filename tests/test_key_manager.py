@@ -3,6 +3,7 @@ import json
 import pytest
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from aipitboss.key_manager import KeyManager
 
@@ -55,14 +56,16 @@ def test_get_api_key_from_env(monkeypatch):
     # Set up environment variable
     monkeypatch.setenv("OPENAI_API_KEY", "env-key")
     
-    api_key = KeyManager.get_api_key(
-        service="openai",
-        api_key=None,
-        keys_file=None,
-        use_env=True
-    )
-    
-    assert api_key == "env-key"
+    # Patch os.path.exists to make sure no keys file is found
+    with patch('os.path.exists', return_value=False):
+        api_key = KeyManager.get_api_key(
+            service="openai",
+            api_key=None,
+            keys_file=None,
+            use_env=True
+        )
+        
+        assert api_key == "env-key"
 
 def test_get_api_key_priority(temp_keys_file, monkeypatch):
     """Test the priority order of API key sources."""
@@ -89,14 +92,14 @@ def test_get_api_key_priority(temp_keys_file, monkeypatch):
 
 def test_get_api_key_not_found():
     """Test when no API key is found."""
-    api_key = KeyManager.get_api_key(
-        service="nonexistent",
-        api_key=None,
-        keys_file=None,
-        use_env=False
-    )
-    
-    assert api_key is None
+    # The KeyManager now raises ValueError when no key is found
+    with pytest.raises(ValueError, match="API key for nonexistent not found"):
+        KeyManager.get_api_key(
+            service="nonexistent",
+            api_key=None,
+            keys_file=None,
+            use_env=False
+        )
 
 def test_save_keys():
     """Test saving keys to a file."""

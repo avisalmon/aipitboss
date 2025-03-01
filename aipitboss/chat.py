@@ -8,7 +8,6 @@ using various AI services.
 from typing import Dict, Any, Optional, List, Union, Callable
 import requests
 from .ai_services import OpenAIService
-from .anthropic_service import AnthropicService
 from .streaming import StreamProcessor
 
 
@@ -30,7 +29,7 @@ class Chat:
         Initialize a Chat instance with an AI service.
         
         Args:
-            service: An initialized AI service (e.g., OpenAIService, AnthropicService)
+            service: An initialized AI service with a chat_completion method
             system_message: Default system message for chat interactions
         """
         self.service = service
@@ -81,13 +80,8 @@ class Chat:
             "content": question
         })
         
-        # Check service type and call appropriate method
-        if isinstance(self.service, OpenAIService):
-            response = self._ask_openai(model, temperature, max_tokens)
-        elif isinstance(self.service, AnthropicService):
-            response = self._ask_anthropic(model, temperature, max_tokens)
-        else:
-            raise ValueError(f"Unsupported service type: {type(self.service)}")
+        # Get response from the service
+        response = self._get_service_response(model, temperature, max_tokens)
         
         # Add the assistant's response to history
         self.conversation_history.append({
@@ -97,13 +91,14 @@ class Chat:
         
         return response
     
+    # Proper method delegation for ask alias
     def ask(self, question: str, **kwargs) -> str:
         """
-        Alias for ask_question for simplified API.
+        Alias for ask_question method.
         
         Args:
             question: The question to ask
-            **kwargs: Optional arguments to pass to ask_question
+            **kwargs: Additional arguments to pass to ask_question
             
         Returns:
             The AI's response as a string
@@ -115,7 +110,7 @@ class Chat:
         Change the service used by the chat instance.
         
         Args:
-            service: An initialized AI service (e.g., OpenAIService, AnthropicService)
+            service: An initialized AI service with a chat_completion method
         """
         if not service:
             raise ValueError("Service cannot be None")
@@ -162,16 +157,14 @@ class Chat:
             "content": question
         })
         
-        # Check service type and call appropriate method
+        # Check if we can use streaming with this service
         if isinstance(self.service, OpenAIService):
             response = self._stream_openai(model, temperature, max_tokens, chunk_handler)
-        elif isinstance(self.service, AnthropicService):
-            # Most providers don't support streaming yet
-            response = self._ask_anthropic(model, temperature, max_tokens)
+        else:
+            # Fallback to non-streaming for services that don't support it
+            response = self._get_service_response(model, temperature, max_tokens)
             if chunk_handler:
                 chunk_handler(response)
-        else:
-            raise ValueError(f"Unsupported service type: {type(self.service)}")
         
         # Add the assistant's response to history
         self.conversation_history.append({
@@ -181,17 +174,17 @@ class Chat:
         
         return response
     
-    def _ask_openai(
+    def _get_service_response(
         self,
         model: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: Optional[int] = 150
     ) -> str:
         """
-        Ask a question using the OpenAI service.
+        Get a response from the service.
         
         Args:
-            model: Optional model to use (defaults to OpenAI's default)
+            model: Optional model to use
             temperature: Sampling temperature (0-1)
             max_tokens: Maximum number of tokens to generate
             
@@ -208,12 +201,30 @@ class Chat:
         if max_tokens:
             kwargs["max_tokens"] = max_tokens
         
+        # Call the service's chat_completion method
         response = self.service.chat_completion(
             messages=self.conversation_history,
             **kwargs
         )
         
-        return response["choices"][0]["message"]["content"]
+        # Parse the response based on the service type
+        # For OpenAI-style API
+        if "choices" in response and len(response["choices"]) > 0:
+            if "message" in response["choices"][0]:
+                return response["choices"][0]["message"]["content"]
+            elif "text" in response["choices"][0]:
+                return response["choices"][0]["text"]
+        
+        # For content-style API (various providers)
+        if "content" in response:
+            if isinstance(response["content"], list) and len(response["content"]) > 0:
+                if "text" in response["content"][0]:
+                    return response["content"][0]["text"]
+            elif isinstance(response["content"], str):
+                return response["content"]
+        
+        # If we don't recognize the format, return the raw response
+        return str(response)
     
     def _stream_openai(
         self,
@@ -270,52 +281,6 @@ class Chat:
             response.iter_lines(),
             chunk_handler=chunk_handler
         )
-    
-    def _ask_anthropic(
-        self,
-        model: Optional[str] = None,
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = 150
-    ) -> str:
-        """
-        Ask a question using the Anthropic service.
-        
-        Args:
-            model: Optional model to use (defaults to Anthropic's default)
-            temperature: Sampling temperature (0-1)
-            max_tokens: Maximum number of tokens to generate
-            
-        Returns:
-            The AI's response as a string
-        """
-        # Format messages for Anthropic's API
-        # Extract system message if present
-        system_message = None
-        messages = []
-        
-        for msg in self.conversation_history:
-            if msg["role"] == "system":
-                system_message = msg["content"]
-            else:
-                messages.append(msg)
-        
-        kwargs = {
-            "temperature": temperature,
-        }
-        
-        if model:
-            kwargs["model"] = model
-            
-        if max_tokens:
-            kwargs["max_tokens"] = max_tokens
-        
-        response = self.service.message(
-            messages=messages,
-            system=system_message,
-            **kwargs
-        )
-        
-        return response["content"][0]["text"]
     
     def clear_history(self):
         """
