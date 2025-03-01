@@ -113,10 +113,11 @@ KeyManager.save_keys(
    - Windows: `env\Scripts\activate`
    - Linux/Mac: `source env/bin/activate`
 4. Install development dependencies: `pip install -e ".[dev]"`
-5. Run tests: `pytest -k "not live"`
+5. Set up Git hooks (Windows): `setup_hooks.bat`
+6. Run tests: `pytest -k "not live"`
    - To run live tests (requires API keys): `pytest -v --runlive`
 
-Pre-commit hooks will automatically run tests before each commit to ensure code quality.
+Pre-commit hooks will automatically run tests before each commit to ensure code quality. On Windows, run the `setup_hooks.bat` script to properly configure Git hooks. If you encounter issues with the pre-commit hook, you can bypass it using `git commit --no-verify -m "your message"`.
 
 ## License
 
